@@ -15,20 +15,20 @@ pipeline {
             }
         stage("docker tag "){
             steps{
-            sh "sudo docker image tag shubhambadade07/test:latest shubhambadade07/test:$BUILD_NUMBER "
+            sh "docker image tag shubhambadade07/test:latest shubhambadade07/test:$BUILD_NUMBER "
             }
         }
         stage("docker login"){
             steps{
                 
-                sh "sudo docker login -u shubhambadade07 -p Pass@12345"
+                sh "docker login -u shubhambadade07 -p Pass@12345"
             
             }
         }
         stage("push docker file"){
             steps{
-                sh "sudo docker push shubhambadade07/test:latest"
-                sh "sudo docker push shubhambadade07/test:$BUILD_NUMBER"
+                sh "docker push shubhambadade07/test:latest"
+                sh "docker push shubhambadade07/test:$BUILD_NUMBER"
             }
         }
         stage('Check and Manage Container') {
@@ -38,8 +38,8 @@ pipeline {
                     def containerExists = bat(returnStatus: true, script: 'docker ps -a --filter "name=test" --format "{{.Names}}" | findstr /r "test"')
                     if (containerExists == 0) {
                         // Stop and remove the container if it exists
-                        sh 'sudo docker stop test'
-                        sh 'sudo docker rm test'
+                        sh 'docker stop test'
+                        sh 'docker rm test'
                         echo 'Container "test" stopped and removed.'
                     } else {
                         echo 'Container "test" is not present.'
@@ -49,7 +49,7 @@ pipeline {
         }
         stage("run Backend Container"){
             steps{
-                sh 'sudo docker run -d -p 8085:80 --name test shubhambadade07/test'
+                sh 'docker run -d -p 8085:80 --name test shubhambadade07/test'
             }
 
         }
