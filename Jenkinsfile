@@ -10,7 +10,7 @@ pipeline {
     
         stage("build docker file"){
             steps{
-            sh "sudo docker build -t shubhambadade07/test ."
+            sh "docker build -t shubhambadade07/test ."
             }
             }
         stage("docker tag "){
