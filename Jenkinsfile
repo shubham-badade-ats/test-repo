@@ -33,9 +33,10 @@ pipeline {
         }
         stage('Check and Manage Container') {
             steps {
-                script {
+                 script {
                     // Check if the container exists
-                    def containerExists = bat(returnStatus: true, script: 'docker ps -a --filter "name=test" --format "{{.Names}}" | findstr /r "test"')
+                    def containerExists = sh(script: 'docker ps -a --filter "name=test" --format "{{.Names}}" | grep "test"', returnStatus: true)
+
                     if (containerExists == 0) {
                         // Stop and remove the container if it exists
                         sh 'docker stop test'
