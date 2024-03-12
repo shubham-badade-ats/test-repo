@@ -82,11 +82,11 @@ output</a>.</p>
  emailext (
  subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
  body: body,
- to: 'recipent-email@gmail.com',
- from: 'jenkins@example.com',
+ to: 'shubhambadade007@gmail.com',
+ from: 'shubhambadade.ats454@gmail.com',
  replyTo: 'jenkins@example.com',
  mimeType: 'text/html',
- attachmentsPattern: 'trivy-report.html'
+ 
  )
  }
  }
