@@ -80,8 +80,7 @@ output</a>.</p>
  </body>
  </html>"""
  emailext (
- subject: "${jobName} - Build ${buildNumber} -
-${pipelineStatus.toUpperCase()}",
+ subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
  body: body,
  to: 'recipent-email@gmail.com',
  from: 'jenkins@example.com',
