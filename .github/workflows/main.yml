@@ -1,0 +1,44 @@
+# This is a basic workflow that is manually triggered
+
+name: Delete Old Branches
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Runs every Monday at midnight
+  workflow_dispatch:    # Allows manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  delete-old-branches:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Get Branch List
+        run: |
+          curl -s -H "Authorization: token ${{ secrets.TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/branches" | jq -r '.[].name' > branches.txt
+
+      - name: Delete Old Branches
+        run: |
+          cutoff_date=$(date -d "-1 days" +%Y-%m-%dT%H:%M:%SZ)
+
+          for branch in $(cat branches.txt); do
+            last_commit_date=$(curl -s -H "Authorization: token ${{ secrets.TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/commits/$branch" | jq -r '.commit.committer.date')
+            
+            if [[ "$last_commit_date" < "$cutoff_date" ]]; then
+              echo "Deleting branch: $branch"
+              curl -X DELETE -H "Authorization: token ${{ secrets.TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/git/refs/heads/$branch"
+            else
+              echo "Branch $branch is recent. Skipping."
+            fi
+          done
