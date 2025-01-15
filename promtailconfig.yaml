@@ -1,0 +1,40 @@
+server:
+  http_listen_port: 9080  # The port Promtail's HTTP server listens on
+  grpc_listen_port: 0     # Disable gRPC server as it's not typically needed
+
+clients:
+  - url: http://<LOKI_ADDRESS>:3100/loki/api/v1/push  # Replace <LOKI_ADDRESS> with your Loki instance URL
+
+positions:
+  filename: C:/Promtail/positions.yaml  # File to track the last read positions of logs
+
+scrape_configs:
+  # Scrape Jenkins Logs
+  - job_name: jenkins-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: jenkins
+          host: ${COMPUTERNAME}  # Adds the Windows computer name as a label
+          __path__: C:/Program Files (x86)/Jenkins/logs/*.log
+
+  # Scrape General Windows Log Files
+  - job_name: windows-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: windows-logs
+          host: ${COMPUTERNAME}  # Adds the Windows computer name as a label
+          __path__: C:/path/to/your/system/logs/*.log  # Replace with your actual log directory
+
+  # Optional: Scrape Windows Event Logs (if needed)
+  - job_name: windows-event-logs
+    windows_events:
+      bookmark_path: C:/Promtail/bookmark.xml  # Keeps track of the last processed events
+      event_log_name: Application              # Log type: Application, System, etc.
+      labels:
+        job: windows-event-log
+        host: ${COMPUTERNAME}
+        source: application
