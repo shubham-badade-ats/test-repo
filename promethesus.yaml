@@ -1,0 +1,63 @@
+# Global configuration
+global:
+  scrape_interval: 15s   # How often Prometheus will scrape metrics
+  evaluation_interval: 15s  # How often Prometheus will evaluate rules
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'localhost:9093'  # URL of your Alertmanager
+
+# Rule files for alerting
+rule_files:
+  - "alert.rules"
+
+# Scrape configurations
+scrape_configs:
+
+  # Scrape Linux machines using Node Exporter
+  - job_name: 'node'
+    static_configs:
+      - targets:
+        - '192.168.1.100:9100'  # Replace with the IP of your Linux server running Node Exporter
+        - '192.168.1.101:9100'  # Another Linux server (example)
+    metrics_path: '/metrics'
+
+  # Scrape Windows machines using Windows Exporter
+  - job_name: 'windows'
+    static_configs:
+      - targets:
+        - '192.168.1.10:9182'  # Replace with the IP of your Windows server running Windows Exporter
+        - '192.168.1.11:9182'  # Another Windows server (example)
+    metrics_path: '/metrics'
+
+  # Scrape additional services (e.g., HTTP, Docker, etc.)
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+        - 'localhost:9090'  # Scrape Prometheus itself for monitoring its own metrics
+
+  # Scrape custom applications (example for a web service)
+  - job_name: 'my-web-app'
+    static_configs:
+      - targets:
+        - '192.168.1.200:8080'  # Replace with your application's IP and port
+    metrics_path: '/metrics'
+
+  # Scrape Kubernetes if you're using Kubernetes (optional)
+  - job_name: 'kubernetes'
+    kubernetes_sd_configs:
+      - api_server: 'https://k8s-api-server.example.com'  # Kubernetes API server
+        role: 'pod'
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_name]
+        target_label: pod
+
+  # Additional scrape configurations can be added here (like for Docker, custom services, etc.)
+
+# Scrape interval configuration
+scrape_interval: 30s   # Default scrape interval for all jobs, can be overridden in job-specific config
+
+# Additional configuration for specific targets can be added if needed (e.g., TLS settings, custom headers)
